@@ -13,7 +13,7 @@ public class NextStepGuideTest {
     WebDriver driver;
     WebDriverWait wait;
 
-    String BASE_URL = System.getProperty("baseUrl", "http://13.206.71.119:8000");
+    String BASE_URL = System.getProperty("baseUrl", "http://nextstep_web:8000");
     String USERNAME = "testuser_selenium";
     String PASSWORD = "TestPass@1234";
 
