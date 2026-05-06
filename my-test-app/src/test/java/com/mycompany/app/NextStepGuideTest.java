@@ -41,11 +41,11 @@ public class NextStepGuideTest {
         driver.get(BASE_URL + "/accounts/login/");
         wait.until(ExpectedConditions.presenceOfElementLocated(By.tagName("form")));
         
-        // Your HTML uses id="login" for email field
-        driver.findElement(By.id("login")).clear();
-        driver.findElement(By.id("login")).sendKeys(TEST_USERNAME);
-        driver.findElement(By.id("password")).clear();
-        driver.findElement(By.id("password")).sendKeys(TEST_PASSWORD);
+        // Your HTML uses id="id_login" for email field
+        driver.findElement(By.id("id_login")).clear();
+        driver.findElement(By.id("id_login")).sendKeys(TEST_USERNAME);
+        driver.findElement(By.id("id_password")).clear();
+        driver.findElement(By.id("id_password")).sendKeys(TEST_PASSWORD);
         
         // Your form uses button with class "continue-btn"
         driver.findElement(By.cssSelector("button.continue-btn")).click();
@@ -79,18 +79,18 @@ public class NextStepGuideTest {
 
     // ==============================
     // TEST 3: Login form fields are present
-    // Your HTML uses id="login" and id="password"
+    // Your HTML uses id="id_login" and id="id_password"
     // ==============================
     @Test(priority = 3)
     public void test03_loginFieldsPresent() {
         driver.get(BASE_URL + "/accounts/login/");
         wait.until(ExpectedConditions.presenceOfElementLocated(By.tagName("form")));
         
-        boolean hasLoginField = !driver.findElements(By.id("login")).isEmpty();
-        boolean hasPasswordField = !driver.findElements(By.id("password")).isEmpty();
+        boolean hasLoginField = !driver.findElements(By.id("id_login")).isEmpty();
+        boolean hasPasswordField = !driver.findElements(By.id("id_password")).isEmpty();
         
-        assert hasLoginField : "Email field (id='login') not found on login page";
-        assert hasPasswordField : "Password field (id='password') not found on login page";
+        assert hasLoginField : "Email field (id='id_login') not found on login page";
+        assert hasPasswordField : "Password field (id='id_password') not found on login page";
         System.out.println("✓ test03_loginFieldsPresent PASSED");
     }
 
@@ -102,8 +102,8 @@ public class NextStepGuideTest {
         driver.get(BASE_URL + "/accounts/login/");
         wait.until(ExpectedConditions.presenceOfElementLocated(By.tagName("form")));
         
-        driver.findElement(By.id("login")).sendKeys("completely_invalid_user_xyz");
-        driver.findElement(By.id("password")).sendKeys("wrongpassword999");
+        driver.findElement(By.id("id_login")).sendKeys("completely_invalid_user_xyz");
+        driver.findElement(By.id("id_password")).sendKeys("wrongpassword999");
         driver.findElement(By.cssSelector("button.continue-btn")).click();
 
         wait.until(ExpectedConditions.or(
@@ -207,8 +207,8 @@ public class NextStepGuideTest {
         driver.get(BASE_URL + "/accounts/login/");
         wait.until(ExpectedConditions.presenceOfElementLocated(By.tagName("form")));
 
-        driver.findElement(By.id("login")).sendKeys(TEST_USERNAME);
-        driver.findElement(By.id("password")).sendKeys(TEST_PASSWORD);
+        driver.findElement(By.id("id_login")).sendKeys(TEST_USERNAME);
+        driver.findElement(By.id("id_password")).sendKeys(TEST_PASSWORD);
         driver.findElement(By.cssSelector("button.continue-btn")).click();
 
         wait.until(ExpectedConditions.not(
@@ -254,6 +254,7 @@ public class NextStepGuideTest {
 
     // ==============================
     // TEST 13: Feedback page loads when logged in
+    // Your feedback page uses id="comments" for textarea, not "feedback"
     // ==============================
     @Test(priority = 13)
     public void test13_feedbackPageLoadsWhenLoggedIn() {
@@ -262,7 +263,7 @@ public class NextStepGuideTest {
         wait.until(ExpectedConditions.presenceOfElementLocated(By.tagName("body")));
 
         WebElement feedbackTextarea = wait.until(
-            ExpectedConditions.presenceOfElementLocated(By.id("feedback"))
+            ExpectedConditions.presenceOfElementLocated(By.id("comments"))
         );
         assert feedbackTextarea.isDisplayed() : "Feedback textarea not visible";
         System.out.println("✓ test13_feedbackPageLoadsWhenLoggedIn PASSED");
@@ -278,9 +279,9 @@ public class NextStepGuideTest {
         driver.get(BASE_URL + "/users/feedback/");
         wait.until(ExpectedConditions.presenceOfElementLocated(By.tagName("body")));
 
-        assert driver.getPageSource().contains("not logged in") ||
-               driver.getCurrentUrl().contains("login") :
-               "Unauthenticated user should see login prompt or be redirected";
+        // Check if redirected to login page
+        boolean redirectedToLogin = driver.getCurrentUrl().contains("login");
+        assert redirectedToLogin : "Unauthenticated user should be redirected to login page";
         System.out.println("✓ test14_feedbackRequiresLogin PASSED");
     }
 
@@ -291,7 +292,7 @@ public class NextStepGuideTest {
     public void test15_logoutWorks() {
         login();
         
-        driver.get(BASE_URL + "/accounts/logout/");
+        driver.get(BASE_URL + "/users/logout/");
         wait.until(ExpectedConditions.presenceOfElementLocated(By.tagName("body")));
 
         driver.get(BASE_URL + "/users/dashboard/");
@@ -299,11 +300,8 @@ public class NextStepGuideTest {
 
         boolean redirectedToLogin = driver.getCurrentUrl().contains("login") ||
                                     driver.getCurrentUrl().contains("accounts");
-        boolean showsLoggedOut = driver.getPageSource().toLowerCase().contains("login") ||
-                                  driver.getPageSource().toLowerCase().contains("sign in");
-
-        assert redirectedToLogin || showsLoggedOut :
-               "After logout, dashboard should not be accessible";
+        
+        assert redirectedToLogin : "After logout, dashboard should redirect to login";
         System.out.println("✓ test15_logoutWorks PASSED");
     }
 }
